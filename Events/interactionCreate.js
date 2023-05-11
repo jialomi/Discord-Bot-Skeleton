@@ -7,7 +7,7 @@ module.exports = {
     async execute(client, interaction) {
 
         // Application interaction command handler.
-        if (interaction.isCommand()) {
+        if (interaction.isChatInputCommand()) {
 
             try {
                 // Assing variable to a command.
@@ -151,6 +151,27 @@ module.exports = {
                 log.bug('Error with interactionCreate event', error);
                 return interaction.reply({ content: '🐛 An error occurred while executing the selection menu!', ephemeral: true })
                     .catch(err => log.bug('Error to send interaction response', err));
+            }
+        }
+
+        // Application interaction Context Menu Command Handler.
+        if (interaction.isUserContextMenuCommand()) {
+            
+            try {
+                // Assigning variable to command
+                const context = client.contextCommands.get(interaction.commandName);
+
+                // Check if command exists.
+                if (!client.contextCommands.get(interaction.commandName)) return interaction.reply({ content: '⛔ It seems that this command is not valid and cannot be executed.\nTry again later...', ephemeral: true });
+
+                // Create args array
+                const args = [];
+
+                // Execute the command.
+                return context.execute(interaction);
+            } catch (error) {
+                log.bug('Error with interactionCreate event', error);
+                return interaction.reply({ content: '🐛 An error occurred while executing the command!', ephemeral: true }).catch(err => log.bug('Error to send interaction response', err));
             }
         }
     },
